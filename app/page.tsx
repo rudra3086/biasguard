@@ -111,41 +111,24 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg-primary)' }}>
-      {/* Background gradient orbs */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div
-          className="absolute -top-40 -left-40 w-96 h-96 rounded-full opacity-10"
-          style={{ background: 'radial-gradient(circle, #6366f1 0%, transparent 70%)' }}
-        />
-        <div
-          className="absolute top-1/3 -right-40 w-80 h-80 rounded-full opacity-10"
-          style={{ background: 'radial-gradient(circle, #ec4899 0%, transparent 70%)' }}
-        />
-        <div
-          className="absolute bottom-0 left-1/3 w-96 h-96 rounded-full opacity-5"
-          style={{ background: 'radial-gradient(circle, #8b5cf6 0%, transparent 70%)' }}
-        />
-      </div>
-
       <Navbar onUploadClick={handleUploadClick} />
 
-      <main className="relative max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+      <main className="relative max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
 
         {/* Hero Banner */}
         <div
           className="rounded-2xl p-6 sm:p-8 overflow-hidden relative"
           style={{
-            background: 'linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(139,92,246,0.1) 50%, rgba(236,72,153,0.08) 100%)',
-            border: '1px solid rgba(99,102,241,0.25)',
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border)',
           }}
         >
-          <div className="absolute top-0 right-0 w-64 h-64 opacity-10" style={{ background: 'radial-gradient(circle, #818cf8 0%, transparent 70%)' }} />
           <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <span
                   className="text-xs font-semibold px-2.5 py-1 rounded-full"
-                  style={{ background: 'rgba(99,102,241,0.2)', color: '#818cf8' }}
+                  style={{ background: 'rgba(59,130,246,0.14)', color: '#93c5fd', border: '1px solid rgba(59,130,246,0.35)' }}
                 >
                   AI Fairness Audit v2.4
                 </span>
@@ -157,9 +140,8 @@ export default function Dashboard() {
                   {currentBiasDetected ? 'Bias Detected' : 'Fair Model'}
                 </span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold mb-1" style={{ color: 'var(--text-primary)' }}>
-                Model Fairness{' '}
-                <span className="gradient-text">Dashboard</span>
+              <h1 className="text-2xl sm:text-3xl font-extrabold mb-1 tracking-tight" style={{ color: 'var(--text-primary)' }}>
+                Model Fairness Dashboard
               </h1>
               <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
                 Real-time bias monitoring · Loan Approval Model v3.1 · Last analyzed 2 min ago
@@ -169,7 +151,7 @@ export default function Dashboard() {
               <button
                 id="refresh-analysis-btn"
                 className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm transition-all duration-300 hover:bg-white/10"
-                style={{ border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text-secondary)' }}
+                style={{ border: '1px solid var(--border)', color: 'var(--text-secondary)', background: 'rgba(255,255,255,0.02)' }}
                 onClick={() => {
                   setIsLoading(true)
                   setTimeout(() => setIsLoading(false), 1500)
@@ -183,7 +165,7 @@ export default function Dashboard() {
               <button
                 id="export-report-btn"
                 className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 hover:opacity-90"
-                style={{ background: 'rgba(99,102,241,0.2)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.3)' }}
+                style={{ background: 'rgba(59,130,246,0.14)', color: '#bfdbfe', border: '1px solid rgba(59,130,246,0.35)' }}
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -270,7 +252,7 @@ export default function Dashboard() {
                   { label: 'Protected Attrs', value: 'gender, location, age' },
                   { label: 'Last Updated', value: 'Apr 6, 2026 · 10:23 AM' },
                 ].map(item => (
-                  <div key={item.label} className="flex justify-between items-center py-2" style={{ borderBottom: '1px solid rgba(30,32,64,0.5)' }}>
+                  <div key={item.label} className="flex justify-between items-center py-2" style={{ borderBottom: '1px solid rgba(40,50,65,0.6)' }}>
                     <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{item.label}</span>
                     <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{item.value}</span>
                   </div>
@@ -284,7 +266,7 @@ export default function Dashboard() {
         <footer className="pt-4 pb-8 text-center" style={{ borderTop: '1px solid var(--border)' }}>
           <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
             BiasGuard Lite · AI Fairness Monitoring Platform · v2.4.1 ·{' '}
-            <span style={{ color: '#6366f1' }}>Powered by BiasGuard LLM</span>
+            <span style={{ color: 'var(--accent-light)' }}>Powered by BiasGuard LLM</span>
           </p>
         </footer>
       </main>

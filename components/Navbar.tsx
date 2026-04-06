@@ -13,8 +13,8 @@ export default function Navbar({ onUploadClick }: NavbarProps) {
     <nav
       className="sticky top-0 z-50 px-4 sm:px-6 py-3"
       style={{
-        background: 'rgba(10, 11, 20, 0.85)',
-        backdropFilter: 'blur(16px)',
+        background: 'rgba(13, 17, 23, 0.86)',
+        backdropFilter: 'blur(12px)',
         borderBottom: '1px solid var(--border)',
       }}
     >
@@ -23,16 +23,15 @@ export default function Navbar({ onUploadClick }: NavbarProps) {
         <div className="flex items-center gap-3">
           <div
             className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}
+            style={{ background: 'rgba(59, 130, 246, 0.18)', border: '1px solid rgba(59, 130, 246, 0.35)' }}
           >
-            <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-4 h-4" style={{ color: 'var(--accent-light)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             </svg>
           </div>
           <div>
             <span className="font-bold text-base tracking-tight" style={{ color: 'var(--text-primary)' }}>
-              BiasGuard{' '}
-              <span className="gradient-text">Lite</span>
+              BiasGuard
             </span>
             <div className="flex items-center gap-1.5 mt-0.5">
               <span className="w-1.5 h-1.5 rounded-full bg-green-400 pulse-dot" />
@@ -50,7 +49,7 @@ export default function Navbar({ onUploadClick }: NavbarProps) {
               className="px-4 py-2 text-sm rounded-xl transition-all duration-200 hover:text-white"
               style={{
                 color: i === 0 ? 'var(--text-primary)' : 'var(--text-muted)',
-                background: i === 0 ? 'rgba(99,102,241,0.1)' : 'transparent',
+                background: i === 0 ? 'rgba(255,255,255,0.04)' : 'transparent',
               }}
             >
               {item}
@@ -79,11 +78,11 @@ export default function Navbar({ onUploadClick }: NavbarProps) {
           <button
             id="nav-upload-dataset"
             onClick={onUploadClick}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 hover:opacity-90 hover:scale-105"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 hover:opacity-90"
             style={{
-              background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-              color: 'white',
-              boxShadow: '0 0 20px rgba(99, 102, 241, 0.3)',
+              background: 'rgba(59, 130, 246, 0.14)',
+              border: '1px solid rgba(59, 130, 246, 0.35)',
+              color: '#bfdbfe',
             }}
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -96,7 +95,7 @@ export default function Navbar({ onUploadClick }: NavbarProps) {
           {/* Avatar */}
           <div
             className="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold cursor-pointer hidden sm:flex"
-            style={{ background: 'linear-gradient(135deg, #ec4899, #8b5cf6)', color: 'white' }}
+            style={{ background: 'rgba(255,255,255,0.07)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}
           >
             BG
           </div>
@@ -123,7 +122,7 @@ export default function Navbar({ onUploadClick }: NavbarProps) {
               className="w-full text-left px-4 py-2.5 text-sm rounded-xl transition-all duration-200"
               style={{
                 color: i === 0 ? 'var(--text-primary)' : 'var(--text-muted)',
-                background: i === 0 ? 'rgba(99,102,241,0.1)' : 'transparent',
+                background: i === 0 ? 'rgba(255,255,255,0.04)' : 'transparent',
               }}
             >
               {item}

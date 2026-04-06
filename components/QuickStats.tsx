@@ -26,11 +26,11 @@ function StatCard({
 }) {
   return (
     <div
-      className="rounded-2xl p-5 flex items-start gap-4 transition-all duration-300 hover:scale-[1.02] group"
+      className="rounded-2xl p-5 flex items-start gap-4 transition-all duration-300 group"
       style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
     >
       <div
-        className="p-3 rounded-xl flex-shrink-0 transition-all duration-300 group-hover:scale-110"
+        className="p-3 rounded-xl flex-shrink-0 transition-all duration-300"
         style={{ background: bg }}
       >
         <div style={{ color }}>{icon}</div>
@@ -65,7 +65,7 @@ export default function QuickStats({ totalSamples, demographicGroups, biasDetect
         value={totalSamples.toLocaleString()}
         sub="Dataset records analyzed"
         color="var(--accent-light)"
-        bg="rgba(99, 102, 241, 0.12)"
+        bg="rgba(59, 130, 246, 0.12)"
         isLoading={isLoading}
       />
       <StatCard
@@ -77,8 +77,8 @@ export default function QuickStats({ totalSamples, demographicGroups, biasDetect
         label="Demographic Groups"
         value={demographicGroups}
         sub="Subgroups under assessment"
-        color="#c084fc"
-        bg="rgba(192, 132, 252, 0.12)"
+        color="#7dd3fc"
+        bg="rgba(125, 211, 252, 0.12)"
         isLoading={isLoading}
       />
       <StatCard
