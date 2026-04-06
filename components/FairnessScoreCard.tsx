@@ -11,7 +11,7 @@ function getScoreConfig(score: number) {
   if (score >= 80) return {
     label: 'Fair',
     color: '#10b981',
-    glowClass: 'glow-green',
+    glowClass: '',
     bgColor: 'rgba(16, 185, 129, 0.08)',
     borderColor: 'rgba(16, 185, 129, 0.2)',
     gradient: ['#10b981', '#34d399'],
@@ -22,7 +22,7 @@ function getScoreConfig(score: number) {
   if (score >= 60) return {
     label: 'Moderate',
     color: '#f59e0b',
-    glowClass: 'glow-yellow',
+    glowClass: '',
     bgColor: 'rgba(245, 158, 11, 0.08)',
     borderColor: 'rgba(245, 158, 11, 0.2)',
     gradient: ['#f59e0b', '#fbbf24'],
@@ -33,7 +33,7 @@ function getScoreConfig(score: number) {
   return {
     label: 'Biased',
     color: '#ef4444',
-    glowClass: 'glow-red',
+    glowClass: '',
     bgColor: 'rgba(239, 68, 68, 0.08)',
     borderColor: 'rgba(239, 68, 68, 0.2)',
     gradient: ['#ef4444', '#f87171'],
@@ -90,7 +90,7 @@ export default function FairnessScoreCard({ score, isLoading }: FairnessScoreCar
             <circle
               cx="100" cy="100" r="88"
               fill="none"
-              stroke="rgba(255,255,255,0.05)"
+              stroke="rgba(255,255,255,0.08)"
               strokeWidth="12"
             />
             {/* Score ring */}
@@ -104,7 +104,6 @@ export default function FairnessScoreCard({ score, isLoading }: FairnessScoreCar
               strokeDashoffset={strokeDashoffset}
               style={{
                 transition: 'stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1)',
-                filter: `drop-shadow(0 0 8px ${config.color}60)`,
               }}
             />
             {/* Inner glow ring */}
@@ -154,7 +153,7 @@ export default function FairnessScoreCard({ score, isLoading }: FairnessScoreCar
                   className="h-full rounded-full transition-all duration-1000"
                   style={{
                     width: `${v}%`,
-                    background: `linear-gradient(90deg, ${c.gradient[0]}, ${c.gradient[1]})`,
+                    background: c.gradient[0],
                   }}
                 />
               </div>

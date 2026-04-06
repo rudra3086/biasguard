@@ -3,17 +3,17 @@
 @tailwind utilities;
 
 :root {
-  --bg-primary: #0a0b14;
-  --bg-secondary: #0f1020;
-  --bg-card: #13142a;
-  --bg-card-hover: #1a1b35;
-  --border: #1e2040;
-  --border-light: #252650;
-  --text-primary: #e8eaf6;
-  --text-secondary: #9094c4;
-  --text-muted: #5c6094;
-  --accent: #6366f1;
-  --accent-light: #818cf8;
+  --bg-primary: #0d1117;
+  --bg-secondary: #111827;
+  --bg-card: #161d27;
+  --bg-card-hover: #1b2431;
+  --border: #283241;
+  --border-light: #344154;
+  --text-primary: #f3f6fb;
+  --text-secondary: #b8c3d3;
+  --text-muted: #8c9bb0;
+  --accent: #3b82f6;
+  --accent-light: #60a5fa;
   --success: #10b981;
   --warning: #f59e0b;
   --danger: #ef4444;
@@ -37,7 +37,10 @@ body {
 }
 
 body {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Manrope', 'Segoe UI', system-ui, sans-serif;
+  background:
+    radial-gradient(1200px 600px at 50% -25%, rgba(96, 165, 250, 0.1), transparent 55%),
+    var(--bg-primary);
 }
 
 /* Custom scrollbar */
@@ -58,29 +61,29 @@ body {
 
 /* Glass morphism card */
 .glass-card {
-  background: rgba(19, 20, 42, 0.8);
-  backdrop-filter: blur(12px);
+  background: rgba(22, 29, 39, 0.88);
+  backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(30, 32, 64, 0.6);
+  border: 1px solid rgba(40, 50, 65, 0.7);
 }
 
 /* Glow effects */
 .glow-green {
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.15), 0 0 40px rgba(16, 185, 129, 0.05);
+  box-shadow: 0 10px 24px rgba(16, 185, 129, 0.1);
 }
 .glow-yellow {
-  box-shadow: 0 0 20px rgba(245, 158, 11, 0.15), 0 0 40px rgba(245, 158, 11, 0.05);
+  box-shadow: 0 10px 24px rgba(245, 158, 11, 0.1);
 }
 .glow-red {
-  box-shadow: 0 0 20px rgba(239, 68, 68, 0.15), 0 0 40px rgba(239, 68, 68, 0.05);
+  box-shadow: 0 10px 24px rgba(239, 68, 68, 0.1);
 }
 .glow-purple {
-  box-shadow: 0 0 20px rgba(99, 102, 241, 0.2), 0 0 40px rgba(99, 102, 241, 0.05);
+  box-shadow: 0 10px 24px rgba(59, 130, 246, 0.12);
 }
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #818cf8 0%, #c084fc 50%, #f472b6 100%);
+  background: linear-gradient(135deg, #93c5fd 0%, #60a5fa 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -97,9 +100,9 @@ body {
   position: absolute;
   inset: -1px;
   border-radius: inherit;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899);
+  background: linear-gradient(135deg, #3b82f6, #60a5fa, #93c5fd);
   z-index: -1;
-  opacity: 0.5;
+  opacity: 0.25;
 }
 
 /* Score ring animation */
@@ -111,8 +114,8 @@ body {
 
 /* Upload drag area */
 .drag-active {
-  border-color: #6366f1 !important;
-  background: rgba(99, 102, 241, 0.05) !important;
+  border-color: #3b82f6 !important;
+  background: rgba(59, 130, 246, 0.08) !important;
 }
 
 /* Toggle switch */
@@ -126,7 +129,7 @@ body {
   100% { background-position: 200% 0; }
 }
 .skeleton {
-  background: linear-gradient(90deg, #1a1b35 25%, #252650 50%, #1a1b35 75%);
+  background: linear-gradient(90deg, #202836 25%, #2a3545 50%, #202836 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -134,10 +137,10 @@ body {
 /* Recharts custom styles */
 .recharts-cartesian-grid-horizontal line,
 .recharts-cartesian-grid-vertical line {
-  stroke: rgba(30, 32, 64, 0.8) !important;
+  stroke: rgba(40, 50, 65, 0.9) !important;
 }
 .recharts-text {
-  fill: #9094c4 !important;
+  fill: #93a5bb !important;
   font-size: 12px !important;
 }
 .recharts-tooltip-wrapper {
@@ -146,8 +149,8 @@ body {
 
 /* Custom tooltip */
 .custom-tooltip {
-  background: #1a1b35;
-  border: 1px solid #252650;
+  background: #1a2230;
+  border: 1px solid #344154;
   border-radius: 8px;
   padding: 8px 12px;
   font-size: 13px;

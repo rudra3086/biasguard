@@ -50,7 +50,7 @@ export default function DatasetUpload({ onDataLoaded }: DatasetUploadProps) {
   return (
     <div className="rounded-2xl p-6" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
       <div className="flex items-center gap-3 mb-5">
-        <div className="p-2 rounded-lg" style={{ background: 'rgba(99,102,241,0.15)' }}>
+        <div className="p-2 rounded-lg" style={{ background: 'rgba(59,130,246,0.15)' }}>
           <svg className="w-5 h-5" style={{ color: 'var(--accent-light)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
           </svg>
@@ -67,7 +67,7 @@ export default function DatasetUpload({ onDataLoaded }: DatasetUploadProps) {
           className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-300 ${isDragging ? 'drag-active' : ''}`}
           style={{
             borderColor: isDragging ? 'var(--accent)' : 'var(--border-light)',
-            background: isDragging ? 'rgba(99,102,241,0.05)' : 'rgba(255,255,255,0.02)',
+            background: isDragging ? 'rgba(59,130,246,0.08)' : 'rgba(255,255,255,0.02)',
           }}
           onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
           onDragLeave={() => setIsDragging(false)}
@@ -82,7 +82,7 @@ export default function DatasetUpload({ onDataLoaded }: DatasetUploadProps) {
             onChange={handleFileInput}
           />
           <div className="flex flex-col items-center gap-3">
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: 'rgba(99,102,241,0.1)' }}>
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: 'rgba(59,130,246,0.12)' }}>
               <svg className="w-6 h-6" style={{ color: 'var(--accent-light)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
@@ -103,8 +103,7 @@ export default function DatasetUpload({ onDataLoaded }: DatasetUploadProps) {
       {isProcessing && (
         <div className="flex flex-col items-center justify-center py-10 gap-4">
           <div className="relative">
-            <div className="w-10 h-10 rounded-full border-2 border-transparent border-t-indigo-500 animate-spin" />
-            <div className="absolute inset-0 w-10 h-10 rounded-full border-2 border-transparent border-r-purple-500 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '0.8s' }} />
+            <div className="w-10 h-10 rounded-full border-2 border-transparent animate-spin" style={{ borderTopColor: 'var(--accent-light)', borderRightColor: 'rgba(96,165,250,0.35)' }} />
           </div>
           <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Analyzing dataset...</p>
         </div>
