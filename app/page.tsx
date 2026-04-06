@@ -110,19 +110,13 @@ export default function Dashboard() {
   const currentAlerts = includeSensitiveAttr ? MOCK_ALERTS : []
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--bg-primary)' }}>
+    <div className="min-h-screen app-shell" style={{ background: 'var(--bg-primary)' }}>
       <Navbar onUploadClick={handleUploadClick} />
 
-      <main className="relative max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+      <main className="relative max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6 fade-in-up">
 
         {/* Hero Banner */}
-        <div
-          className="rounded-2xl p-6 sm:p-8 overflow-hidden relative"
-          style={{
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border)',
-          }}
-        >
+        <div className="hero-panel rounded-2xl p-6 sm:p-8 overflow-hidden relative">
           <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 mb-2">
@@ -150,8 +144,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-3">
               <button
                 id="refresh-analysis-btn"
-                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm transition-all duration-300 hover:bg-white/10"
-                style={{ border: '1px solid var(--border)', color: 'var(--text-secondary)', background: 'rgba(255,255,255,0.02)' }}
+                className="btn-subtle flex items-center gap-2 px-4 py-2 rounded-xl text-sm transition-all duration-300"
                 onClick={() => {
                   setIsLoading(true)
                   setTimeout(() => setIsLoading(false), 1500)
@@ -164,8 +157,7 @@ export default function Dashboard() {
               </button>
               <button
                 id="export-report-btn"
-                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 hover:opacity-90"
-                style={{ background: 'rgba(59,130,246,0.14)', color: '#bfdbfe', border: '1px solid rgba(59,130,246,0.35)' }}
+                className="btn-primary flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 hover:opacity-90"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -206,7 +198,7 @@ export default function Dashboard() {
         <section>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>
-              Fairness Analytics
+              <span className="section-heading">Fairness Analytics</span>
             </h2>
             <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
               Showing data for {data.total_samples.toLocaleString()} samples
@@ -234,7 +226,7 @@ export default function Dashboard() {
         <div ref={uploadRef} id="upload-section">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>
-              Dataset Management
+              <span className="section-heading">Dataset Management</span>
             </h2>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

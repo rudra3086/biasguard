@@ -47,8 +47,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 function ChartCard({ title, children, subtitle }: { title: string; children: React.ReactNode; subtitle?: string }) {
   return (
     <div
-      className="rounded-2xl p-6 transition-all duration-300 hover:border-opacity-80"
-      style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
+      className="advanced-card rounded-2xl p-6 transition-all duration-300"
     >
       <div className="mb-5">
         <h3 className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>{title}</h3>
@@ -61,7 +60,7 @@ function ChartCard({ title, children, subtitle }: { title: string; children: Rea
 
 function SkeletonChart() {
   return (
-    <div className="rounded-2xl p-6" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+    <div className="advanced-card rounded-2xl p-6">
       <div className="skeleton h-5 w-48 rounded mb-5" />
       <div className="skeleton h-48 w-full rounded-xl" />
     </div>
