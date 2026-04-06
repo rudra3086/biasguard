@@ -26,8 +26,7 @@ function StatCard({
 }) {
   return (
     <div
-      className="rounded-2xl p-5 flex items-start gap-4 transition-all duration-300 group"
-      style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
+      className="advanced-card rounded-2xl p-5 flex items-start gap-4 transition-all duration-300 group"
     >
       <div
         className="p-3 rounded-xl flex-shrink-0 transition-all duration-300"
