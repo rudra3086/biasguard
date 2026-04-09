@@ -36,8 +36,12 @@ export async function POST(request: Request) {
       })
 
       if (!response.ok) {
-        const e = await response.json().catch(() => ({ message: 'Unknown error' }))
-        throw new Error(e.message || 'Analysis failed')
+        try {
+          const errorData = await response.json()
+          throw new Error(errorData.message || errorData.detail || `HTTP ${response.status}`)
+        } catch (parseError) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+        }
       }
 
       const data = await response.json()
@@ -52,11 +56,17 @@ export async function POST(request: Request) {
       // Return analysis results
       return NextResponse.json(data)
     } catch (backendError) {
-      console.error('Backend communication error:', backendError)
+      const errorMsg = backendError instanceof Error ? backendError.message : 'Unknown error'
+      console.error('Backend communication error:', errorMsg)
+      
+      // Provide helpful error message
+      const isConnectionError = errorMsg.includes('fetch') || errorMsg.includes('ECONNREFUSED')
       return NextResponse.json(
         {
-          error: `Backend error: ${backendError instanceof Error ? backendError.message : 'Unknown error'}`,
-          message: 'Make sure the FastAPI backend is running on port 8000',
+          error: isConnectionError 
+            ? `Cannot connect to backend at ${backendUrl}. Make sure the FastAPI backend is running.`
+            : `Backend error: ${errorMsg}`,
+          message: `Backend URL: ${backendUrl}. Check BACKEND_URL environment variable and backend status.`,
         },
         { status: 503 }
       )

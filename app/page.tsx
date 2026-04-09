@@ -8,8 +8,7 @@ import Charts from '@/components/Charts'
 import BiasAlerts from '@/components/BiasAlerts'
 import AIExplanation from '@/components/AIExplanation'
 import DatasetUpload from '@/components/DatasetUpload'
-import BiasSimulation from '@/components/BiasSimulation'
-import ComparisonTable from '@/components/ComparisonTable'
+// `ComparisonTable` (before/after mitigation comparison) removed per request
 import type { Alert } from '@/components/BiasAlerts'
 
 interface AppData {
@@ -22,6 +21,7 @@ interface AppData {
   explanation: string
   total_samples: number
   demographic_groups: number
+  features?: any[]
 }
 
 function generateAlertsFromData(data: AppData): Alert[] {
@@ -68,23 +68,12 @@ function generateAlertsFromData(data: AppData): Alert[] {
   return alerts
 }
 
-function generateComparisonData(originalData: AppData) {
-  const mitigatedScore = Math.min(originalData.fairness_score + 15, 95)
-  return [
-    { metric: 'Fairness Score', original: originalData.fairness_score, after: mitigatedScore, change: mitigatedScore - originalData.fairness_score },
-    { metric: 'Graduate Approval Rate', original: `${Math.round((originalData.approval_rates.graduate || 0) * 100)}%`, after: `${Math.round((originalData.approval_rates.graduate || 0) * 100)}%`, change: 0 },
-    { metric: 'Non-Graduate Approval Rate', original: `${Math.round((originalData.approval_rates.non_graduate || 0) * 100)}%`, after: `${Math.round(Math.min((originalData.approval_rates.non_graduate || 0) * 1.2, 1) * 100)}%`, change: 5 },
-    { metric: 'Disparate Impact', original: originalData.disparate_impact.toString(), after: Math.min(originalData.disparate_impact * 1.15, 1).toString(), change: 0.1 },
-    { metric: 'Self-Employed Rate', original: `${Math.round((originalData.approval_rates.self_employed || 0) * 100)}%`, after: `${Math.round((originalData.approval_rates.self_employed || 0) * 100)}%`, change: 0 },
-    { metric: 'Model Accuracy', original: '87%', after: '85%', change: -2 },
-  ]
-}
+// Comparison generation removed — mitigation-scenario comparison was deprecated
 
 // ── Page Component ────────────────────────────────────────────
 export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(false)
   const [data, setData] = useState<AppData | null>(null)
-  const [includeSensitiveAttr, setIncludeSensitiveAttr] = useState(true)
   const [showUploadSection, setShowUploadSection] = useState(false)
   const uploadRef = useRef<HTMLDivElement>(null)
 
@@ -99,21 +88,12 @@ export default function Dashboard() {
     setData(analysisData)
   }
 
-  const handleSimulationToggle = (value: boolean) => {
-    setIncludeSensitiveAttr(value)
-  }
-
   // Only calculate values if data exists
-  const currentScore = data ? (includeSensitiveAttr ? data.fairness_score : Math.min(data.fairness_score + 15, 95)) : 0
-  const currentRates = data
-    ? includeSensitiveAttr
-      ? data.approval_rates
-      : { ...data.approval_rates, non_graduate: Math.min((data.approval_rates.non_graduate || 0) * 1.2, 1) }
-    : {}
-  const currentDI = data ? (includeSensitiveAttr ? data.disparate_impact : Math.min(data.disparate_impact * 1.15, 1)) : 0
-  const currentBiasDetected = data ? (includeSensitiveAttr ? data.bias_detected : false) : false
-  const currentAlerts = data ? (includeSensitiveAttr ? generateAlertsFromData(data) : []) : []
-  const comparisonData = data ? generateComparisonData(data) : []
+  const currentScore = data ? data.fairness_score : 0
+  const currentRates = data ? data.approval_rates : {}
+  const currentDI = data ? data.disparate_impact : 0
+  const currentBiasDetected = data ? data.bias_detected : false
+  const currentAlerts = data ? generateAlertsFromData(data) : []
 
   return (
     <div className="min-h-screen app-shell" style={{ background: 'var(--bg-primary)' }}>
@@ -214,20 +194,12 @@ export default function Dashboard() {
               <Charts
                 approvalRates={currentRates}
                 disparateImpact={currentDI}
+                features={data.features}
                 isLoading={isLoading}
               />
             </section>
 
-            {/* Bottom Grid: Simulation + Comparison + Upload */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <BiasSimulation
-                includeSensitiveAttr={includeSensitiveAttr}
-                onToggle={handleSimulationToggle}
-                originalScore={data.fairness_score}
-                simulatedScore={Math.min(data.fairness_score + 15, 95)}
-              />
-              <ComparisonTable data={comparisonData} isLoading={isLoading} />
-            </div>
+            {/* Mitigation comparison removed */}
           </>
         )}
 

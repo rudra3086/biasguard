@@ -63,6 +63,15 @@ interface AppData {
   explanation: string
   total_samples: number
   demographic_groups: number
+  features?: Array<{
+    feature: string
+    type: string
+    groups: Record<string, number>
+    bias_score: number
+    bias_ratio: number
+    severity: string
+    groups_affected: number
+  }>
 }
 
 interface DatasetUploadProps {
@@ -141,20 +150,29 @@ export default function DatasetUpload({ onDataLoaded }: DatasetUploadProps) {
     })
       .then(async (res) => {
         if (!res.ok) {
-          const errorData = await res.json()
-          throw new Error(errorData.error || 'Analysis failed')
+          const errorData = await res.json().catch(() => ({}))
+          const errorMsg = errorData.error || errorData.detail || 'Analysis failed'
+          throw new Error(errorMsg)
         }
         return res.json() as Promise<BiasAnalysisResult>
       })
       .then((data) => {
         // Transform BiasAnalysisResult to AppData format
+        // Build approval rates from all groups in all features
+        const approval_rates: Record<string, number> = {}
+        data.features.forEach(f => {
+          if (f.groups) {
+            Object.entries(f.groups).forEach(([group, rate]) => {
+              if (rate !== null && rate !== undefined) {
+                approval_rates[group] = typeof rate === 'number' ? rate : 0
+              }
+            })
+          }
+        })
+
         const transformedData: AppData & { fileName: string } = {
           fairness_score: data.summary.fairness_score,
-          approval_rates: data.features.reduce((acc, f) => {
-            // Build approval rates from feature groups
-            acc[f.feature] = Object.values(f.groups)[0] || 0
-            return acc
-          }, {} as Record<string, number>),
+          approval_rates: approval_rates,
           disparate_impact: data.features.length > 0 ? data.features[0].bias_ratio : 0.8,
           disparate_impact_education: data.features.find((f: any) => f.feature.toLowerCase().includes('education'))?.bias_ratio,
           disparate_impact_employment: data.features.find((f: any) => f.feature.toLowerCase().includes('employment'))?.bias_ratio,
@@ -163,6 +181,7 @@ export default function DatasetUpload({ onDataLoaded }: DatasetUploadProps) {
           total_samples: file.rows,
           demographic_groups: data.summary.total_features_analyzed,
           fileName: file.name,
+          features: data.features,
         }
         
         onDataLoaded(transformedData)

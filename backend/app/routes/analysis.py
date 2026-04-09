@@ -1,10 +1,23 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException, status
 from typing import Optional, List
+from pydantic import BaseModel
 import pandas as pd
 import os
+import logging
 from datetime import datetime
 
 from ..services.bias_analysis import BiasAnalysisService
+from ..services.llm_explainer import LLMExplainer
+
+logger = logging.getLogger(__name__)
+
+
+class AnalyzeRequest(BaseModel):
+    """Request model for bias analysis endpoint."""
+    file_id: str
+    target_column: str
+    task_type: str = 'classification'
+    sensitive_features: Optional[List[str]] = None
 
 router = APIRouter(prefix="/api", tags=["upload"])
 
@@ -13,6 +26,7 @@ UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 bias_service = BiasAnalysisService()
+llm_explainer = LLMExplainer()
 
 
 @router.post("/upload")
@@ -81,12 +95,7 @@ async def upload_dataset(file: UploadFile = File(...)):
 
 
 @router.post("/analyze")
-async def analyze_bias(
-    file_id: str,
-    target_column: str,
-    task_type: str = 'classification',
-    sensitive_features: Optional[List[str]] = None
-):
+async def analyze_bias(request: AnalyzeRequest):
     """
     Analyze dataset for bias.
     
@@ -105,12 +114,12 @@ async def analyze_bias(
     """
     try:
         # Load file
-        filepath = os.path.join(UPLOAD_DIR, file_id)
+        filepath = os.path.join(UPLOAD_DIR, request.file_id)
         
         if not os.path.exists(filepath):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"File not found: {file_id}"
+                detail=f"File not found: {request.file_id}"
             )
         
         # Read dataset
@@ -123,13 +132,13 @@ async def analyze_bias(
             )
         
         # Validate parameters
-        if target_column not in df.columns:
+        if request.target_column not in df.columns:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Target column '{target_column}' not found in dataset"
+                detail=f"Target column '{request.target_column}' not found in dataset"
             )
         
-        if task_type not in ['classification', 'regression']:
+        if request.task_type not in ['classification', 'regression']:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="task_type must be 'classification' or 'regression'"
@@ -138,9 +147,9 @@ async def analyze_bias(
         # Run analysis
         result = bias_service.analyze_bias(
             df,
-            target_column,
-            task_type,
-            sensitive_features
+            request.target_column,
+            request.task_type,
+            request.sensitive_features
         )
         
         if result.get('status') == 'error':
@@ -157,4 +166,48 @@ async def analyze_bias(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error analyzing dataset: {str(e)}"
+        )
+
+
+class ExplainRequest(BaseModel):
+    """Request model for explanation endpoint."""
+    bias_analysis: dict
+
+
+@router.post("/explain")
+async def explain_bias(request: ExplainRequest):
+    """
+    Generate AI explanation for bias analysis results.
+    
+    Parameters:
+        - bias_analysis: Complete bias analysis JSON output
+    
+    Returns:
+        - summary: Brief overview of fairness issues
+        - key_issues: Top 2-3 critical bias problems
+        - root_causes: Potential reasons for detected biases
+        - recommendations: Actionable improvement suggestions
+        - model: Which explanation model was used (gemini-pro or template-based)
+    """
+    try:
+        if not request.bias_analysis:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="bias_analysis data is required"
+            )
+        
+        # Generate explanation
+        explanation = llm_explainer.generate_explanation(request.bias_analysis)
+        
+        logger.info(f"Generated explanation using model: {explanation.get('model', 'unknown')}")
+        
+        return explanation
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error generating explanation: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error generating explanation: {str(e)}"
         )

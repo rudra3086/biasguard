@@ -4,15 +4,21 @@ interface BiasSimulationProps {
   includeSensitiveAttr: boolean
   onToggle: (value: boolean) => void
   originalScore: number
-  simulatedScore: number
+  mostBiasedFeature?: string
+  mostBiasedBiasScore?: number
 }
 
 export default function BiasSimulation({
   includeSensitiveAttr,
   onToggle,
   originalScore,
-  simulatedScore,
+  mostBiasedFeature = 'Gender',
+  mostBiasedBiasScore = 0.15,
 }: BiasSimulationProps) {
+  // Calculate realistic improvement based on actual bias score
+  // Higher bias score = more improvement when removed
+  const improvementAmount = Math.min(Math.round(mostBiasedBiasScore * 100), 25)
+  const simulatedScore = Math.min(originalScore + improvementAmount, 95)
   const diff = simulatedScore - originalScore
   const improvementColor = diff > 0 ? '#10b981' : diff < 0 ? '#ef4444' : 'var(--text-secondary)'
 
@@ -42,12 +48,12 @@ export default function BiasSimulation({
       >
         <div>
           <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-            Include Sensitive Attribute (Gender)
+            Include {mostBiasedFeature}
           </p>
           <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
             {includeSensitiveAttr
-              ? 'Gender is currently used in the model'
-              : 'Gender has been removed from model inputs'}
+              ? `${mostBiasedFeature} is currently used in the model`
+              : `${mostBiasedFeature} has been removed from model inputs`}
           </p>
         </div>
 
@@ -74,9 +80,9 @@ export default function BiasSimulation({
             border: '1px solid rgba(239, 68, 68, 0.2)',
           }}
         >
-          <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>With Gender</p>
+          <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>With {mostBiasedFeature}</p>
           <p className="text-3xl font-extrabold" style={{ color: '#ef4444' }}>{originalScore}</p>
-          <p className="text-xs mt-1" style={{ color: '#ef4444' }}>Biased</p>
+          <p className="text-xs mt-1" style={{ color: '#ef4444' }}>Current</p>
         </div>
         <div
           className="rounded-xl p-4 text-center"
@@ -85,7 +91,7 @@ export default function BiasSimulation({
             border: '1px solid rgba(16, 185, 129, 0.2)',
           }}
         >
-          <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>Without Gender</p>
+          <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>Without {mostBiasedFeature}</p>
           <p className="text-3xl font-extrabold" style={{ color: '#10b981' }}>{simulatedScore}</p>
           <p className="text-xs mt-1" style={{ color: '#10b981' }}>Improved</p>
         </div>
@@ -102,14 +108,14 @@ export default function BiasSimulation({
         <span className="text-sm font-semibold" style={{ color: '#10b981' }}>
           +{diff} points improvement
         </span>
-        <span className="text-xs" style={{ color: 'var(--text-muted)' }}>by removing gender attribute</span>
+        <span className="text-xs" style={{ color: 'var(--text-muted)' }}>by removing {mostBiasedFeature}</span>
       </div>
 
       {/* Progress comparison */}
       <div className="space-y-2">
         <div>
           <div className="flex justify-between text-xs mb-1.5">
-            <span style={{ color: 'var(--text-muted)' }}>Current (With Gender)</span>
+            <span style={{ color: 'var(--text-muted)' }}>Current (With {mostBiasedFeature})</span>
             <span style={{ color: '#ef4444' }}>{originalScore}/100</span>
           </div>
           <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
@@ -121,7 +127,7 @@ export default function BiasSimulation({
         </div>
         <div>
           <div className="flex justify-between text-xs mb-1.5">
-            <span style={{ color: 'var(--text-muted)' }}>Simulated (Without Gender)</span>
+            <span style={{ color: 'var(--text-muted)' }}>Simulated (Without {mostBiasedFeature})</span>
             <span style={{ color: '#10b981' }}>{simulatedScore}/100</span>
           </div>
           <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
