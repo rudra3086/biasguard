@@ -20,8 +20,8 @@ logger = logging.getLogger(__name__)
 
 # Initialize FastAPI app
 app = FastAPI(
-    title="Universal AI Bias Detection Tool",
-    description="Production-ready backend service for detecting bias across any dataset",
+    title="Bias Detection Tool",
+    description="Backend service for detecting bias in datasets",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
@@ -52,18 +52,15 @@ logger.info("=" * 60)
 async def root():
     """Root endpoint with API documentation."""
     return {
-        "message": "Universal AI Bias Detection Tool API",
+        "message": "Bias Detection Tool API",
         "version": "1.0.0",
         "status": "operational",
         "endpoints": {
             "upload": "/api/upload",
             "analyze": "/api/analyze",
-            "explain": "/api/explain",
             "health": "/health",
-            "docs": "/docs",
-            "redoc": "/redoc"
-        },
-        "documentation": "Visit /docs for interactive API documentation"
+            "docs": "/docs"
+        }
     }
 
 

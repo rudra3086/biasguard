@@ -120,35 +120,6 @@ curl -X POST http://localhost:8000/api/analyze \
 
 ---
 
-### 3. POST `/api/explain`
-
-Get AI-powered explanations of bias findings.
-
-**Request:**
-```bash
-curl -X POST http://localhost:8000/api/explain \
-  -H "Content-Type: application/json" \
-  -d '{"bias_analysis": {...}}'
-```
-
-**Response:**
-```json
-{
-  "status": "success",
-  "summary": "Your model shows gender bias with 70% higher approval for males.",
-  "key_issues": [
-    "Gender feature shows HIGH severity bias (score: 0.35)"
-  ],
-  "recommendations": [
-    "Apply fairness constraints during model retraining",
-    "Consider removing or de-biasing problematic features"
-  ],
-  "model": "gemini-pro"
-}
-```
-
----
-
 ## 🏗️ Project Structure
 
 ```
@@ -166,11 +137,10 @@ backend/
 │   ├── config.py               # Configuration management
 │   ├── routes/
 │   │   ├── __init__.py
-│   │   └── analysis.py         # API endpoints (upload, analyze, explain)
+│   │   └── analysis.py         # API endpoints (upload, analyze)
 │   ├── services/
 │   │   ├── __init__.py
-│   │   ├── bias_analysis.py    # Core bias detection logic
-│   │   └── llm_explainer.py    # LLM-based explanations (NEW)
+│   │   └── bias_analysis.py    # Core bias detection logic
 │   └── utils/
 │       ├── __init__.py
 │       ├── preprocessing.py    # Data preprocessing
@@ -355,7 +325,6 @@ See [PRODUCTION_DEPLOYMENT.md](PRODUCTION_DEPLOYMENT.md) for comprehensive secur
 | GET | `/` | API info & metadata |
 | POST | `/api/upload` | Upload CSV file |
 | POST | `/api/analyze` | Analyze bias |
-| POST | `/api/explain` | Get AI explanation |
 
 ---
 

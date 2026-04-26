@@ -68,3 +68,53 @@
 2026-04-09 22:00:32,235 - main - INFO - ============================================================
 2026-04-09 22:00:32,236 - main - INFO - Application startup event triggered
 2026-04-09 22:00:32,237 - main - INFO - Initializing services...
+2026-04-09 22:11:59,340 - main - INFO - Application shutdown event triggered
+2026-04-09 22:11:59,340 - main - INFO - Cleaning up resources...
+2026-04-09 22:12:01,165 - main - INFO - ============================================================
+2026-04-09 22:12:01,166 - main - INFO - Universal AI Bias Detection Tool - Backend Started
+2026-04-09 22:12:01,166 - main - INFO - Timestamp: 2026-04-09T22:12:01.166415
+2026-04-09 22:12:01,166 - main - INFO - CORS Origins: http://localhost:3000, http://localhost:8000
+2026-04-09 22:12:01,166 - main - INFO - ============================================================
+2026-04-09 22:12:01,167 - main - INFO - Application startup event triggered
+2026-04-09 22:12:01,168 - main - INFO - Initializing services...
+2026-04-09 22:12:01,168 - main - INFO - Application shutdown event triggered
+2026-04-09 22:12:01,168 - main - INFO - Cleaning up resources...
+2026-04-09 22:12:02,626 - main - INFO - ============================================================
+2026-04-09 22:12:02,626 - main - INFO - Universal AI Bias Detection Tool - Backend Started
+2026-04-09 22:12:02,627 - main - INFO - Timestamp: 2026-04-09T22:12:02.627287
+2026-04-09 22:12:02,627 - main - INFO - CORS Origins: http://localhost:3000, http://localhost:8000
+2026-04-09 22:12:02,627 - main - INFO - ============================================================
+2026-04-09 22:12:02,628 - main - INFO - Application startup event triggered
+2026-04-09 22:12:02,628 - main - INFO - Initializing services...
+2026-04-09 22:12:13,515 - main - INFO - Application shutdown event triggered
+2026-04-09 22:12:13,516 - main - INFO - Cleaning up resources...
+2026-04-09 22:12:15,331 - main - INFO - ============================================================
+2026-04-09 22:12:15,332 - main - INFO - Universal AI Bias Detection Tool - Backend Started
+2026-04-09 22:12:15,332 - main - INFO - Timestamp: 2026-04-09T22:12:15.332819
+2026-04-09 22:12:15,332 - main - INFO - CORS Origins: http://localhost:3000, http://localhost:8000
+2026-04-09 22:12:15,332 - main - INFO - ============================================================
+2026-04-09 22:12:15,333 - main - INFO - Application startup event triggered
+2026-04-09 22:12:15,333 - main - INFO - Initializing services...
+2026-04-09 22:15:11,752 - main - INFO - Application shutdown event triggered
+2026-04-09 22:15:11,752 - main - INFO - Cleaning up resources...
+2026-04-09 22:15:13,186 - main - INFO - ============================================================
+2026-04-09 22:15:13,186 - main - INFO - Universal AI Bias Detection Tool - Backend Started
+2026-04-09 22:15:13,187 - main - INFO - Timestamp: 2026-04-09T22:15:13.187172
+2026-04-09 22:15:13,187 - main - INFO - CORS Origins: http://localhost:3000, http://localhost:8000
+2026-04-09 22:15:13,187 - main - INFO - ============================================================
+2026-04-09 22:15:13,188 - main - INFO - Application startup event triggered
+2026-04-09 22:15:13,189 - main - INFO - Initializing services...
+2026-04-26 21:41:53,457 - main - INFO - ============================================================
+2026-04-26 21:41:53,458 - main - INFO - Universal AI Bias Detection Tool - Backend Started
+2026-04-26 21:41:53,458 - main - INFO - Timestamp: 2026-04-26T21:41:53.458610
+2026-04-26 21:41:53,458 - main - INFO - CORS Origins: http://localhost:3000, http://localhost:8000
+2026-04-26 21:41:53,458 - main - INFO - ============================================================
+2026-04-26 21:41:53,460 - main - INFO - Application startup event triggered
+2026-04-26 21:41:53,460 - main - INFO - Initializing services...
+2026-04-26 22:09:31,931 - main - INFO - ============================================================
+2026-04-26 22:09:31,931 - main - INFO - Universal AI Bias Detection Tool - Backend Started
+2026-04-26 22:09:31,931 - main - INFO - Timestamp: 2026-04-26T22:09:31.931019
+2026-04-26 22:09:31,931 - main - INFO - CORS Origins: http://localhost:3000, http://localhost:8000
+2026-04-26 22:09:31,931 - main - INFO - ============================================================
+2026-04-26 22:09:31,933 - main - INFO - Application startup event triggered
+2026-04-26 22:09:31,933 - main - INFO - Initializing services...

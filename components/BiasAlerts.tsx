@@ -15,6 +15,12 @@ interface BiasAlertsProps {
   isLoading?: boolean
 }
 
+interface BiasedCategory {
+  name: string
+  severity: 'critical' | 'high' | 'medium'
+  count: number
+}
+
 const severityConfig = {
   critical: {
     color: '#ef4444',
@@ -55,6 +61,34 @@ const severityConfig = {
 }
 
 export default function BiasAlerts({ alerts, isLoading }: BiasAlertsProps) {
+  // Extract biased categories from alerts
+  const biasedCategories: BiasedCategory[] = []
+  const categoryMap = new Map<string, { severity: 'critical' | 'high' | 'medium'; count: number }>()
+
+  alerts.forEach(alert => {
+    if (categoryMap.has(alert.group)) {
+      const existing = categoryMap.get(alert.group)!
+      existing.count += 1
+      // Update severity to the highest
+      const severityOrder = { critical: 3, high: 2, medium: 1 }
+      if (severityOrder[alert.severity] > severityOrder[existing.severity]) {
+        existing.severity = alert.severity
+      }
+    } else {
+      categoryMap.set(alert.group, { severity: alert.severity, count: 1 })
+    }
+  })
+
+  categoryMap.forEach((value, key) => {
+    biasedCategories.push({ name: key, severity: value.severity, count: value.count })
+  })
+
+  // Sort by severity (critical > high > medium)
+  biasedCategories.sort((a, b) => {
+    const severityOrder = { critical: 3, high: 2, medium: 1 }
+    return severityOrder[b.severity] - severityOrder[a.severity]
+  })
+
   if (isLoading) {
     return (
       <div className="rounded-2xl p-6" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
@@ -84,6 +118,44 @@ export default function BiasAlerts({ alerts, isLoading }: BiasAlertsProps) {
           {alerts.length} Issues
         </span>
       </div>
+
+      {/* Summary Section */}
+      {biasedCategories.length > 0 && (
+        <div className="mb-5 p-4 rounded-xl" style={{ background: 'rgba(15, 23, 42, 0.3)', border: '1px solid rgba(148, 163, 184, 0.1)' }}>
+          <p className="text-xs font-medium mb-3" style={{ color: 'var(--text-muted)' }}>BIASED CATEGORIES ({biasedCategories.length})</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {biasedCategories.map((category) => {
+              const cfg = severityConfig[category.severity]
+              return (
+                <div
+                  key={category.name}
+                  className="flex items-center justify-between p-3 rounded-lg transition-all"
+                  style={{ background: cfg.bg, border: `1px solid ${cfg.border}` }}
+                >
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <div className="flex-shrink-0" style={{ color: cfg.color }}>
+                      {cfg.icon}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-semibold truncate" style={{ color: 'var(--text-primary)' }}>
+                        {category.name}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 ml-2 flex-shrink-0">
+                    <span
+                      className="text-xs px-2 py-1 rounded font-medium"
+                      style={{ background: cfg.badge, color: cfg.color }}
+                    >
+                      {category.count}
+                    </span>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       <div className="space-y-3">
         {alerts.map((alert, index) => {

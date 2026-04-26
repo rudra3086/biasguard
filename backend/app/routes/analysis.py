@@ -7,7 +7,6 @@ import logging
 from datetime import datetime
 
 from ..services.bias_analysis import BiasAnalysisService
-from ..services.llm_explainer import LLMExplainer
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +25,6 @@ UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 bias_service = BiasAnalysisService()
-llm_explainer = LLMExplainer()
 
 
 @router.post("/upload")
@@ -166,48 +164,4 @@ async def analyze_bias(request: AnalyzeRequest):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error analyzing dataset: {str(e)}"
-        )
-
-
-class ExplainRequest(BaseModel):
-    """Request model for explanation endpoint."""
-    bias_analysis: dict
-
-
-@router.post("/explain")
-async def explain_bias(request: ExplainRequest):
-    """
-    Generate AI explanation for bias analysis results.
-    
-    Parameters:
-        - bias_analysis: Complete bias analysis JSON output
-    
-    Returns:
-        - summary: Brief overview of fairness issues
-        - key_issues: Top 2-3 critical bias problems
-        - root_causes: Potential reasons for detected biases
-        - recommendations: Actionable improvement suggestions
-        - model: Which explanation model was used (gemini-pro or template-based)
-    """
-    try:
-        if not request.bias_analysis:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="bias_analysis data is required"
-            )
-        
-        # Generate explanation
-        explanation = llm_explainer.generate_explanation(request.bias_analysis)
-        
-        logger.info(f"Generated explanation using model: {explanation.get('model', 'unknown')}")
-        
-        return explanation
-    
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error generating explanation: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error generating explanation: {str(e)}"
         )
