@@ -290,3 +290,4 @@
 2026-04-27 17:07:44,831 - main - INFO - Initializing services...
 2026-04-27 17:08:29,427 - app.routes.analysis - INFO - Generated explanation using model: fallback
 2026-04-27 17:08:29,451 - app.routes.analysis - INFO - Generated explanation using model: fallback
+2026-04-27 17:30:09,119 - app.routes.analysis - INFO - Generated explanation using model: fallback
