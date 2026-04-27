@@ -20,8 +20,12 @@ COPY . .
 # Create uploads directory
 RUN mkdir -p uploads
 
-# Expose port
+# Add start script and make executable
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
+# Expose default port (documentation only)
 EXPOSE 8000
 
-# Run application; allow using $PORT when set (Render sets PORT env var)
-CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Start application via script that logs the effective port
+CMD ["/start.sh"]
