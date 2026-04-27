@@ -63,6 +63,11 @@ interface AppData {
   explanation: string
   total_samples: number
   demographic_groups: number
+  demographic_categories?: Array<{
+    column: string
+    type: string
+    description: string
+  }>
   features?: Array<{
     feature: string
     type: string
@@ -171,7 +176,7 @@ export default function DatasetUpload({ onDataLoaded }: DatasetUploadProps) {
         })
 
         const transformedData: AppData & { fileName: string } = {
-          fairness_score: data.summary.fairness_score,
+          fairness_score: Math.round(data.summary.fairness_score * 100),
           approval_rates: approval_rates,
           disparate_impact: data.features.length > 0 ? data.features[0].bias_ratio : 0.8,
           disparate_impact_education: data.features.find((f: any) => f.feature.toLowerCase().includes('education'))?.bias_ratio,
@@ -180,6 +185,7 @@ export default function DatasetUpload({ onDataLoaded }: DatasetUploadProps) {
           explanation: data.trends.recommendation || 'Analysis complete',
           total_samples: file.rows,
           demographic_groups: data.summary.total_features_analyzed,
+          demographic_categories: data.demographic_detection?.demographic_categories || [],
           fileName: file.name,
           features: data.features,
         }

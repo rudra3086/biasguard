@@ -29,6 +29,7 @@ interface ChartsProps {
   disparateImpact: number
   features?: FeatureAnalysis[]
   isLoading?: boolean
+  demographicCategories?: Array<{ column: string; type: string; description: string }>
 }
 
 const COLORS = ['#6366f1', '#ec4899', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4']
@@ -187,7 +188,7 @@ function FairnessMetrics({ features }: { features: FeatureAnalysis[] }) {
   )
 }
 
-export default function Charts({ features, disparateImpact, isLoading }: ChartsProps) {
+export default function Charts({ features, disparateImpact, isLoading, demographicCategories }: ChartsProps) {
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -196,24 +197,72 @@ export default function Charts({ features, disparateImpact, isLoading }: ChartsP
     )
   }
 
-  // Filter features with bias (multiple groups) and sort by bias score (highest = most biased)
-  const topFeatures = (features || [])
-    .filter(f => f.groups && Object.keys(f.groups).length > 1 && (f.bias_score > 0.05 || f.severity !== 'LOW'))
-    .sort((a, b) => b.bias_score - a.bias_score)
-    .slice(0, 2)
+  // Extract detected demographic column names from Gemini
+  const detectedDemographics = demographicCategories?.map(d => d.column.toLowerCase()) || []
+
+  // Keywords for demographic/sensitive features (fallback if Gemini detection not available)
+  const demographicKeywords = [
+    'gender', 'sex', 'race', 'ethnicity', 'religion', 'age', 'caste',
+    'marital', 'disability', 'education', 'employment', 'income', 'area', 'location'
+  ]
+
+  // Separate demographic and non-demographic features
+  const demographicFeatures = (features || []).filter(f => {
+    const isMultiGroup = f.groups && Object.keys(f.groups).length > 1
+    // Use Gemini detection if available, otherwise fall back to keywords
+    const isDemographic = detectedDemographics.length > 0 
+      ? detectedDemographics.some(d => f.feature.toLowerCase().includes(d))
+      : demographicKeywords.some(kw => f.feature.toLowerCase().includes(kw))
+    return isMultiGroup && isDemographic
+  }).sort((a, b) => b.bias_score - a.bias_score)
+
+  const otherFeatures = (features || []).filter(f => {
+    const isMultiGroup = f.groups && Object.keys(f.groups).length > 1
+    const isDemographic = detectedDemographics.length > 0 
+      ? detectedDemographics.some(d => f.feature.toLowerCase().includes(d))
+      : demographicKeywords.some(kw => f.feature.toLowerCase().includes(kw))
+    const isExcluded = ['city', 'name'].some(exc => f.feature.toLowerCase().includes(exc))
+    return isMultiGroup && !isDemographic && !isExcluded && (f.bias_score > 0.05 || f.severity !== 'LOW')
+  }).sort((a, b) => b.bias_score - a.bias_score)
+
+  const allFeaturesToShow = [...demographicFeatures, ...otherFeatures]
 
   const diPercent = Math.round(disparateImpact * 100)
   const diColor = diPercent >= 80 ? '#10b981' : diPercent >= 60 ? '#f59e0b' : '#ef4444'
   const diLabel = diPercent >= 80 ? 'Fair' : diPercent >= 60 ? 'Moderate' : 'Biased'
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      {/* Dynamic Feature Charts */}
-      {topFeatures.length > 0 ? (
-        topFeatures.map(feature => (
-          <DynamicBarChart key={feature.feature} feature={feature} groups={feature.groups} />
-        ))
-      ) : (
+    <div className="space-y-6">
+      {/* Demographic Features Section */}
+      {demographicFeatures.length > 0 && (
+        <div>
+          <h3 className="text-sm font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
+            📊 Demographic Analysis by {demographicFeatures.length === 1 ? 'Attribute' : 'Attributes'}
+          </h3>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {demographicFeatures.map(feature => (
+              <DynamicBarChart key={feature.feature} feature={feature} groups={feature.groups} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Other Features Section */}
+      {otherFeatures.length > 0 && (
+        <div>
+          <h3 className="text-sm font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
+            📈 Additional Feature Analysis
+          </h3>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {otherFeatures.map(feature => (
+              <DynamicBarChart key={feature.feature} feature={feature} groups={feature.groups} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* No features message */}
+      {allFeaturesToShow.length === 0 && (
         <ChartCard
           title="Feature Analysis"
           subtitle="No features with multiple groups detected for comparison"
@@ -226,60 +275,63 @@ export default function Charts({ features, disparateImpact, isLoading }: ChartsP
         </ChartCard>
       )}
 
-      {/* Disparate Impact Ratio */}
-      <ChartCard
-        title="Disparate Impact Ratio"
-        subtitle="80% Rule: ratio ≥ 0.8 considered fair"
-      >
-        <div className="flex items-center gap-8">
-          {/* Gauge */}
-          <div className="relative w-40 h-40 flex-shrink-0">
-            <svg viewBox="0 0 160 160" className="w-full h-full -rotate-90">
-              <circle cx="80" cy="80" r="60" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="16" />
-              <circle
-                cx="80" cy="80" r="60"
-                fill="none"
-                stroke={diColor}
-                strokeWidth="16"
-                strokeLinecap="round"
-                strokeDasharray={`${2 * Math.PI * 60}`}
-                strokeDashoffset={`${2 * Math.PI * 60 * (1 - disparateImpact)}`}
-                style={{ transition: 'stroke-dashoffset 1.5s ease', filter: `drop-shadow(0 0 6px ${diColor}80)` }}
-              />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-2xl font-bold" style={{ color: diColor }}>{disparateImpact.toFixed(2)}</span>
-              <span className="text-xs font-medium mt-0.5" style={{ color: diColor }}>{diLabel}</span>
-            </div>
-          </div>
-
-          <div className="flex-1">
-            <div className="space-y-3">
-              <div>
-                <div className="flex justify-between text-xs mb-1" style={{ color: 'var(--text-muted)' }}>
-                  <span>Current Ratio</span>
-                  <span style={{ color: diColor }}>{disparateImpact.toFixed(2)}</span>
-                </div>
-                <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
-                  <div
-                    className="h-full rounded-full transition-all duration-1000"
-                    style={{ width: `${diPercent}%`, background: diColor }}
-                  />
-                </div>
-              </div>
-              <div className="p-3 rounded-xl text-xs" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)' }}>
-                <p style={{ color: 'var(--text-muted)' }}>
-                  The disparate impact ratio measures the rate at which different demographic groups receive positive outcomes.
-                  A ratio below <span style={{ color: '#f59e0b' }}>0.8</span> indicates potential discrimination.
-                </p>
+      {/* Fairness Metrics Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Disparate Impact Ratio */}
+        <ChartCard
+          title="Disparate Impact Ratio"
+          subtitle="80% Rule: ratio ≥ 0.8 considered fair"
+        >
+          <div className="flex items-center gap-8">
+            {/* Gauge */}
+            <div className="relative w-40 h-40 flex-shrink-0">
+              <svg viewBox="0 0 160 160" className="w-full h-full -rotate-90">
+                <circle cx="80" cy="80" r="60" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="16" />
+                <circle
+                  cx="80" cy="80" r="60"
+                  fill="none"
+                  stroke={diColor}
+                  strokeWidth="16"
+                  strokeLinecap="round"
+                  strokeDasharray={`${2 * Math.PI * 60}`}
+                  strokeDashoffset={`${2 * Math.PI * 60 * (1 - disparateImpact)}`}
+                  style={{ transition: 'stroke-dashoffset 1.5s ease', filter: `drop-shadow(0 0 6px ${diColor}80)` }}
+                />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-2xl font-bold" style={{ color: diColor }}>{disparateImpact.toFixed(2)}</span>
+                <span className="text-xs font-medium mt-0.5" style={{ color: diColor }}>{diLabel}</span>
               </div>
             </div>
-          </div>
-        </div>
-      </ChartCard>
 
-      {/* Fairness Score Breakdown */}
-      <FairnessMetrics features={features || []} />
+            <div className="flex-1">
+              <div className="space-y-3">
+                <div>
+                  <div className="flex justify-between text-xs mb-1" style={{ color: 'var(--text-muted)' }}>
+                    <span>Current Ratio</span>
+                    <span style={{ color: diColor }}>{disparateImpact.toFixed(2)}</span>
+                  </div>
+                  <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
+                    <div
+                      className="h-full rounded-full transition-all duration-1000"
+                      style={{ width: `${diPercent}%`, background: diColor }}
+                    />
+                  </div>
+                </div>
+                <div className="p-3 rounded-xl text-xs" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)' }}>
+                  <p style={{ color: 'var(--text-muted)' }}>
+                    The disparate impact ratio measures the rate at which different demographic groups receive positive outcomes.
+                    A ratio below <span style={{ color: '#f59e0b' }}>0.8</span> indicates potential discrimination.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ChartCard>
+
+        {/* Fairness Score Breakdown */}
+        <FairnessMetrics features={features || []} />
+      </div>
     </div>
   )
 }

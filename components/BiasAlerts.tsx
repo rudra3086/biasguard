@@ -124,11 +124,11 @@ export default function BiasAlerts({ alerts, isLoading }: BiasAlertsProps) {
         <div className="mb-5 p-4 rounded-xl" style={{ background: 'rgba(15, 23, 42, 0.3)', border: '1px solid rgba(148, 163, 184, 0.1)' }}>
           <p className="text-xs font-medium mb-3" style={{ color: 'var(--text-muted)' }}>BIASED CATEGORIES ({biasedCategories.length})</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-            {biasedCategories.map((category) => {
+            {biasedCategories.map((category, index) => {
               const cfg = severityConfig[category.severity]
               return (
                 <div
-                  key={category.name}
+                  key={`${category.name}-${index}`}
                   className="flex items-center justify-between p-3 rounded-lg transition-all"
                   style={{ background: cfg.bg, border: `1px solid ${cfg.border}` }}
                 >

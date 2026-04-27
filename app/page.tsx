@@ -6,6 +6,7 @@ import FairnessScoreCard from '@/components/FairnessScoreCard'
 import QuickStats from '@/components/QuickStats'
 import Charts from '@/components/Charts'
 import BiasAlerts from '@/components/BiasAlerts'
+import AIExplanation from '@/components/AIExplanation'
 import DatasetUpload from '@/components/DatasetUpload'
 import type { Alert } from '@/components/BiasAlerts'
 
@@ -28,14 +29,15 @@ function generateAlertsFromFeatures(data: AppData): Alert[] {
     data.features.forEach((feature, index) => {
       if (feature.bias_score >= 0.2) {
         const severity = feature.bias_score >= 0.3 ? 'critical' : feature.bias_score >= 0.2 ? 'high' : 'medium'
+        const featureName = feature.feature || feature.name || `Feature ${index + 1}`
         alerts.push({
           id: String(index + 1),
           severity,
-          title: `Bias Detected in ${feature.name}`,
-          description: `Feature "${feature.name}" shows disparate impact with a bias score of ${feature.bias_score.toFixed(3)}.`,
+          title: `Bias Detected in ${featureName}`,
+          description: `Feature "${featureName}" shows disparate impact with a bias score of ${feature.bias_score.toFixed(3)}.`,
           metric: 'Bias Score',
           value: feature.bias_score.toFixed(3),
-          group: feature.name,
+          group: featureName,
         })
       }
     })
@@ -151,6 +153,23 @@ export default function Dashboard() {
                 approvalRates={currentRates}
                 disparateImpact={currentDI}
                 features={data.features}
+                isLoading={isLoading}
+                demographicCategories={data.demographic_categories}
+              />
+            </section>
+
+            {/* AI Explanation Section */}
+            <section>
+              <h2 className="text-base font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
+                <span className="section-heading">🤖 AI-Powered Bias Analysis</span>
+              </h2>
+              <AIExplanation
+                analysis_data={{
+                  fairness_score: currentScore / 100,
+                  high_bias_count: currentAlerts.filter(a => a.severity === 'critical').length,
+                  medium_bias_count: currentAlerts.filter(a => a.severity === 'high').length,
+                  features: data.features,
+                }}
                 isLoading={isLoading}
               />
             </section>

@@ -28,6 +28,7 @@ from ..utils.explainability import (
     get_bias_trends,
     get_feature_importance
 )
+from .demographic_detector import DemographicDetector
 
 
 class BiasAnalysisService:
@@ -38,6 +39,8 @@ class BiasAnalysisService:
         self.target_col = None
         self.task_type = None
         self.sensitive_features = []
+        self.demographic_detector = DemographicDetector()
+        self.detected_demographics = []
     
     def parse_csv(self, file_content: bytes) -> Tuple[pd.DataFrame, str]:
         """
@@ -115,6 +118,24 @@ class BiasAnalysisService:
             # Detect features
             categorical_cols = detect_categorical_columns(df_processed)
             numerical_cols = detect_numerical_columns(df_processed)
+            
+            # Use Gemini to detect demographic categories
+            all_columns = list(df_processed.columns)
+            
+            # Prepare sample data for context
+            sample_data = {}
+            for col in all_columns[:20]:  # Limit to first 20 columns
+                if col in df_processed.columns:
+                    sample_data[col] = df_processed[col].dropna().unique()[:5].tolist()
+            
+            # Detect demographics using Gemini
+            demo_detection = self.demographic_detector.detect_demographic_categories(
+                all_columns,
+                sample_data
+            )
+            
+            # Extract detected demographic column names
+            self.detected_demographics = [d['column'] for d in demo_detection.get('demographic_categories', [])]
             
             # Detect sensitive features
             self.sensitive_features = detect_sensitive_features(
@@ -195,9 +216,11 @@ class BiasAnalysisService:
                     'most_biased_feature': most_biased.get('feature') if most_biased else None,
                     'total_features_analyzed': len(feature_analysis),
                     'sensitive_features_detected': self.sensitive_features,
+                    'demographic_categories_detected': self.detected_demographics,
                     'dataset_shape': {'rows': df.shape[0], 'columns': df.shape[1]}
                 },
                 'features': feature_analysis,
+                'demographic_detection': demo_detection,
                 'explanations': explanations,
                 'trends': bias_trends,
                 'explainability': shap_importance,

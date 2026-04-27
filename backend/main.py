@@ -58,6 +58,7 @@ async def root():
         "endpoints": {
             "upload": "/api/upload",
             "analyze": "/api/analyze",
+            "explain": "/api/explain",
             "health": "/health",
             "docs": "/docs"
         }

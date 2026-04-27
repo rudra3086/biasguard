@@ -133,36 +133,8 @@ export default function FairnessScoreCard({ score, isLoading }: FairnessScoreCar
         </div>
       </div>
 
-      {/* Score breakdown bars */}
-      <div className="space-y-3 mb-6">
-        {[
-          { label: 'Demographic Parity', value: score - 5 },
-          { label: 'Equal Opportunity', value: score + 3 },
-          { label: 'Equalized Odds', value: score - 12 },
-        ].map((item) => {
-          const v = Math.max(0, Math.min(100, item.value))
-          const c = getScoreConfig(v)
-          return (
-            <div key={item.label}>
-              <div className="flex justify-between text-xs mb-1.5">
-                <span style={{ color: 'var(--text-secondary)' }}>{item.label}</span>
-                <span style={{ color: c.color }}>{v}</span>
-              </div>
-              <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
-                <div
-                  className="h-full rounded-full transition-all duration-1000"
-                  style={{
-                    width: `${v}%`,
-                    background: c.gradient[0],
-                  }}
-                />
-              </div>
-            </div>
-          )
-        })}
-      </div>
-
-      <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{config.description}</p>
+      {/* Description */}
+      <p className="text-sm text-center" style={{ color: 'var(--text-secondary)' }}>{config.description}</p>
     </div>
   )
 }
