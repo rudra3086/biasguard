@@ -17,6 +17,7 @@ interface AppData {
   bias_detected: boolean
   total_samples: number
   demographic_groups: number
+  demographic_categories?: Array<{ column: string; type: string; description: string }>
   features?: any[]
   alerts?: Alert[]
 }

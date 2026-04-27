@@ -42,6 +42,11 @@ interface BiasAnalysisResult {
     top_biased_features: Array<{ feature: string; bias_contribution: number; impact_percentage: number }>
     total_bias_score: number
   }
+  demographic_detection?: {
+    demographic_categories?: Array<{ column: string; type: string; description: string }>;
+    non_demographic_columns?: string[];
+    explanation?: string;
+  }
   recommendations: string
 }
 
