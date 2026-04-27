@@ -129,10 +129,7 @@ if __name__ == "__main__":
     # Create uploads directory if it doesn't exist
     os.makedirs("uploads", exist_ok=True)
     
-    # Run server
-    uvicorn.run(
-        app,
-        host="0.0.0.0",
-        port=8000,
-        reload=True
-    )
+    # Run server using PORT env var when available (compatible with Render/Docker)
+    port = int(os.getenv("PORT", "8000"))
+    reload_flag = os.getenv("RELOAD", "false").lower() in ("1", "true", "yes")
+    uvicorn.run(app, host="0.0.0.0", port=port, reload=reload_flag)
