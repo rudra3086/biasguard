@@ -223,3 +223,26 @@
 2026-04-27 12:47:01,353 - app.routes.analysis - INFO - Generated explanation using model: fallback
 2026-04-27 12:49:31,948 - app.routes.analysis - INFO - Generated explanation using model: fallback
 2026-04-27 12:53:38,934 - app.routes.analysis - INFO - Generated explanation using model: fallback
+2026-04-27 12:54:04,497 - main - INFO - ============================================================
+2026-04-27 12:54:04,497 - main - INFO - Universal AI Bias Detection Tool - Backend Started
+2026-04-27 12:54:04,497 - main - INFO - Timestamp: 2026-04-27T12:54:04.497700
+2026-04-27 12:54:04,497 - main - INFO - CORS Origins: http://localhost:3000, http://localhost:8000
+2026-04-27 12:54:04,497 - main - INFO - ============================================================
+2026-04-27 12:54:04,498 - main - INFO - Application startup event triggered
+2026-04-27 12:54:04,499 - main - INFO - Initializing services...
+2026-04-27 12:54:26,385 - app.routes.analysis - INFO - Generated explanation using model: fallback
+2026-04-27 12:54:26,407 - app.routes.analysis - INFO - Generated explanation using model: fallback
+2026-04-27 12:56:11,634 - app.routes.analysis - INFO - Generated explanation using model: fallback
+2026-04-27 13:03:35,956 - main - INFO - ============================================================
+2026-04-27 13:03:35,957 - main - INFO - Universal AI Bias Detection Tool - Backend Started
+2026-04-27 13:03:35,957 - main - INFO - Timestamp: 2026-04-27T13:03:35.957917
+2026-04-27 13:03:35,957 - main - INFO - CORS Origins: http://localhost:3000, http://localhost:8000
+2026-04-27 13:03:35,957 - main - INFO - ============================================================
+2026-04-27 13:03:35,959 - main - INFO - Application startup event triggered
+2026-04-27 13:03:35,959 - main - INFO - Initializing services...
+2026-04-27 13:04:17,124 - app.routes.analysis - INFO - Generated explanation using model: fallback
+2026-04-27 13:04:17,145 - app.routes.analysis - INFO - Generated explanation using model: fallback
+2026-04-27 13:05:53,819 - app.routes.analysis - INFO - Generated explanation using model: fallback
+2026-04-27 13:08:06,509 - app.routes.analysis - INFO - Generated explanation using model: fallback
+2026-04-27 13:12:33,475 - app.routes.analysis - INFO - Generated explanation using model: fallback
+2026-04-27 13:12:33,487 - app.routes.analysis - INFO - Generated explanation using model: fallback

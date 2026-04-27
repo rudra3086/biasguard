@@ -21,6 +21,53 @@ interface AppData {
   alerts?: Alert[]
 }
 
+function getDisparateImpactCalculation(data: AppData): { calculation: string; feature: string; minGroup: string; maxGroup: string; minRate: number; maxRate: number } | null {
+  if (!data.features || data.features.length === 0) {
+    return null
+  }
+
+  // Find feature with worst (minimum) bias_ratio
+  let worstFeature = data.features[0]
+  let worstRatio = worstFeature.bias_ratio ?? 1.0
+
+  for (const feature of data.features) {
+    const ratio = feature.bias_ratio ?? 1.0
+    if (ratio < worstRatio) {
+      worstRatio = ratio
+      worstFeature = feature
+    }
+  }
+
+  if (!worstFeature.groups) {
+    return null
+  }
+
+  // Find min and max approval rates
+  const rates = Object.entries(worstFeature.groups)
+    .map(([group, rate]) => ({ group, rate: typeof rate === 'number' ? rate : 0 }))
+    .sort((a, b) => a.rate - b.rate)
+
+  if (rates.length < 2) {
+    return null
+  }
+
+  const minRate = rates[0].rate
+  const maxRate = rates[rates.length - 1].rate
+  const minGroup = rates[0].group
+  const maxGroup = rates[rates.length - 1].group
+
+  const calculation = `${(minRate * 100).toFixed(1)}% / ${(maxRate * 100).toFixed(1)}% = ${worstRatio.toFixed(3)}`
+
+  return {
+    calculation,
+    feature: worstFeature.feature,
+    minGroup,
+    maxGroup,
+    minRate,
+    maxRate,
+  }
+}
+
 function generateAlertsFromFeatures(data: AppData): Alert[] {
   const alerts: Alert[] = []
 
@@ -191,19 +238,44 @@ export default function Dashboard() {
               <h3 className="font-semibold text-sm mb-4" style={{ color: 'var(--text-primary)' }}>Current Dataset</h3>
               {data ? (
                 <div className="space-y-3">
-                  {[
-                    { label: 'Records Analyzed', value: data.total_samples.toLocaleString() },
-                    { label: 'Fairness Score', value: `${(currentScore * 100).toFixed(1)}%` },
-                    { label: 'Demographic Groups', value: data.demographic_groups },
-                    { label: 'Bias Detected', value: currentBiasDetected ? 'Yes' : 'No' },
-                    { label: 'Disparate Impact', value: currentDI.toFixed(3) },
-                    { label: 'Status', value: 'Analysis Complete' },
-                  ].map(item => (
-                    <div key={item.label} className="flex justify-between items-center py-2" style={{ borderBottom: '1px solid rgba(40,50,65,0.6)' }}>
-                      <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{item.label}</span>
-                      <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{item.value}</span>
-                    </div>
-                  ))}
+                  {(() => {
+                    const disparateImpactCalc = getDisparateImpactCalculation(data)
+                    const baseItems = [
+                      { label: 'Records Analyzed', value: data.total_samples.toLocaleString() },
+                      { label: 'Fairness Score', value: `${currentScore.toFixed(1)}%` },
+                      { label: 'Demographic Groups', value: data.demographic_groups },
+                      { label: 'Bias Detected', value: currentBiasDetected ? 'Yes' : 'No' },
+                    ]
+
+                    return baseItems.map(item => (
+                      <div key={item.label} className="flex justify-between items-center py-2" style={{ borderBottom: '1px solid rgba(40,50,65,0.6)' }}>
+                        <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{item.label}</span>
+                        <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{item.value}</span>
+                      </div>
+                    )).concat(
+                      // Disparate Impact with calculation
+                      <div key="disparate-impact" className="py-2" style={{ borderBottom: '1px solid rgba(40,50,65,0.6)' }}>
+                        <div className="flex justify-between items-start">
+                          <span className="text-xs" style={{ color: 'var(--text-muted)' }}>Disparate Impact</span>
+                          <div className="text-right">
+                            <div className="text-xs font-medium" style={{ color: currentDI < 0.8 ? '#ef4444' : 'var(--text-secondary)' }}>
+                              {currentDI.toFixed(3)}
+                            </div>
+                            {currentDI < 0.8 && disparateImpactCalc && (
+                              <div className="text-xs mt-1 px-2 py-1 rounded" style={{ background: 'rgba(239,68,68,0.1)', color: '#fca5a5' }}>
+                                {disparateImpactCalc.feature}: {disparateImpactCalc.calculation}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ).concat([
+                      <div key="status" className="flex justify-between items-center py-2" style={{ borderBottom: '1px solid rgba(40,50,65,0.6)' }}>
+                        <span className="text-xs" style={{ color: 'var(--text-muted)' }}>Status</span>
+                        <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>Analysis Complete</span>
+                      </div>
+                    ])
+                  })()}
                 </div>
               ) : (
                 <div className="py-8 text-center">

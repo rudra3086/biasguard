@@ -175,10 +175,18 @@ export default function DatasetUpload({ onDataLoaded }: DatasetUploadProps) {
           }
         })
 
+        // Calculate overall disparate impact (minimum bias_ratio across all features)
+        const disparate_impact_values = data.features
+          .map((f: any) => f.bias_ratio)
+          .filter((ratio: number) => ratio !== null && ratio !== undefined && ratio > 0)
+        const overall_disparate_impact = disparate_impact_values.length > 0 
+          ? Math.min(...disparate_impact_values)
+          : 0.8
+
         const transformedData: AppData & { fileName: string } = {
           fairness_score: Math.round(data.summary.fairness_score * 100),
           approval_rates: approval_rates,
-          disparate_impact: data.features.length > 0 ? data.features[0].bias_ratio : 0.8,
+          disparate_impact: overall_disparate_impact,
           disparate_impact_education: data.features.find((f: any) => f.feature.toLowerCase().includes('education'))?.bias_ratio,
           disparate_impact_employment: data.features.find((f: any) => f.feature.toLowerCase().includes('employment'))?.bias_ratio,
           bias_detected: data.trends.high_bias_count > 0 || data.trends.medium_bias_count > 0,
