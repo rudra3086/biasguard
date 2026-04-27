@@ -3,153 +3,140 @@
 import { useEffect, useState } from 'react'
 
 interface AIExplanationProps {
-  explanation: string
+  analysis_data: {
+    fairness_score: number
+    high_bias_count: number
+    medium_bias_count: number
+    features?: any[]
+  }
   isLoading?: boolean
-  score: number
 }
 
-export default function AIExplanation({ explanation, isLoading, score }: AIExplanationProps) {
-  const [displayedText, setDisplayedText] = useState('')
-  const [isTyping, setIsTyping] = useState(false)
+export default function AIExplanation({ analysis_data, isLoading }: AIExplanationProps) {
+  const [explanation, setExplanation] = useState<string>('')
+  const [model, setModel] = useState<string>('loading...')
+  const [error, setError] = useState<string>('')
 
   useEffect(() => {
-    if (!isLoading && explanation) {
-      setDisplayedText('')
-      setIsTyping(true)
-      let i = 0
-      const interval = setInterval(() => {
-        if (i < explanation.length) {
-          setDisplayedText(explanation.slice(0, i + 1))
-          i++
-        } else {
-          setIsTyping(false)
-          clearInterval(interval)
+    if (isLoading) return
+
+    // Call backend to get Gemini explanation
+    const fetchExplanation = async () => {
+      try {
+        const payload = {
+          bias_analysis: {
+            summary: {
+              fairness_score: analysis_data.fairness_score,
+            },
+            features: analysis_data.features || [],
+            trends: {
+              total_features_analyzed: analysis_data.features?.length || 0,
+              high_bias_count: analysis_data.high_bias_count,
+              medium_bias_count: analysis_data.medium_bias_count,
+            },
+          },
         }
-      }, 18)
-      return () => clearInterval(interval)
+        
+        console.log('Fetching explanation with payload:', payload)
+        
+        const response = await fetch('/api/explain', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+
+        console.log('Response status:', response.status)
+        
+        if (response.ok) {
+          const data = await response.json()
+          console.log('Received data:', data)
+          setExplanation(data.analysis || '')
+          setModel(data.model || 'unknown')
+          setError('')
+        } else {
+          const errorData = await response.text()
+          console.error('Response not ok:', response.status, errorData)
+          setError(`Error: ${response.status}`)
+          setExplanation('')
+        }
+      } catch (error) {
+        console.error('Error fetching explanation:', error)
+        setError(error instanceof Error ? error.message : 'Unknown error')
+        setExplanation('')
+      }
     }
-  }, [explanation, isLoading])
 
-  const insights = [
-    {
-      icon: '01',
-      label: 'Root Cause',
-      text: 'Imbalanced training data with underrepresentation of female applicants in positive outcome class (35% vs 70% approval rate).',
-    },
-    {
-      icon: '02',
-      label: 'Statistical Significance',
-      text: 'p-value < 0.001 confirms the observed disparity is statistically significant and not due to sampling variance.',
-    },
-    {
-      icon: '03',
-      label: 'Recommended Action',
-      text: 'Apply re-weighting or oversampling techniques to the training dataset. Consider removing gender as a direct feature.',
-    },
-  ]
+    fetchExplanation()
+  }, [analysis_data, isLoading])
 
-  return (
-    <div className="rounded-2xl p-6" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-      <div className="flex items-center gap-3 mb-5">
-        <div className="relative">
-          <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center"
-            style={{ background: 'rgba(59,130,246,0.16)', border: '1px solid rgba(59,130,246,0.35)' }}
-          >
-            <svg className="w-4 h-4" style={{ color: 'var(--accent-light)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+  if (isLoading) {
+    return (
+      <div className="rounded-2xl p-6" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-2 rounded-lg" style={{ background: 'rgba(168, 85, 247, 0.15)' }}>
+            <svg className="w-5 h-5 animate-spin" style={{ color: '#a855f7' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
             </svg>
           </div>
-          {!isLoading && (
-            <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full pulse-dot" style={{ background: '#10b981' }} />
-          )}
+          <div>
+            <h3 className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>AI Bias Analysis</h3>
+            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Analyzing with Gemini...</p>
+          </div>
+        </div>
+        <div className="skeleton h-20 w-full rounded-lg" />
+      </div>
+    )
+  }
+
+  return (
+    <div className="rounded-2xl p-6" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+      <div className="flex items-center gap-3 mb-4">
+        <div className="p-2 rounded-lg" style={{ background: 'rgba(168, 85, 247, 0.15)' }}>
+          <svg className="w-5 h-5" style={{ color: '#a855f7' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
         </div>
         <div>
-          <h3 className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>AI Explanation Engine</h3>
-          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Powered by BiasGuard LLM</p>
-        </div>
-        <div className="ml-auto flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs" style={{ background: 'rgba(99,102,241,0.1)', color: '#818cf8' }}>
-          <span className="w-1.5 h-1.5 rounded-full pulse-dot" style={{ background: 'var(--accent-light)' }} />
-          Live Analysis
+          <h3 className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>AI Bias Analysis (Gemini)</h3>
+          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+            {model === 'gemini-1.5-flash' ? '✓ Powered by Google Gemini' : '📋 Using Data-Based Analysis'}
+          </p>
         </div>
       </div>
 
-      {/* Main explanation */}
+      {error && (
+        <div
+          className="p-3 rounded-lg mb-3 text-xs"
+          style={{
+            background: 'rgba(239, 68, 68, 0.1)',
+            border: '1px solid rgba(239, 68, 68, 0.3)',
+            color: '#ef4444',
+          }}
+        >
+          ⚠️ {error}
+        </div>
+      )}
+
       <div
-        className="rounded-xl p-4 mb-4 relative overflow-hidden"
+        className="p-4 rounded-xl text-sm"
         style={{
-          background: 'rgba(255,255,255,0.02)',
-          border: '1px solid var(--border)',
+          background: 'rgba(168, 85, 247, 0.05)',
+          border: '1px solid rgba(168, 85, 247, 0.2)',
+          minHeight: '150px',
+          maxHeight: '500px',
+          overflowY: 'auto',
         }}
       >
-        {isLoading ? (
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-5 h-5 rounded-full border-2 border-transparent border-t-indigo-500 animate-spin" />
-              <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Analyzing model behavior...</span>
-            </div>
-            {[1, 2, 3].map(i => (
-              <div key={i} className="skeleton h-4 rounded" style={{ width: `${[100, 85, 60][i - 1]}%` }} />
-            ))}
-          </div>
+        {explanation ? (
+          <p style={{ color: 'var(--text-secondary)', whiteSpace: 'pre-wrap', lineHeight: '1.6', margin: 0, fontSize: '13px' }}>
+            {explanation}
+          </p>
         ) : (
-          <div>
-            <p className="text-sm leading-relaxed relative z-10" style={{ color: 'var(--text-primary)' }}>
-              {displayedText}
-              {isTyping && (
-                <span
-                  className="inline-block w-0.5 h-4 ml-0.5 animate-pulse"
-                      style={{ background: 'var(--accent-light)', verticalAlign: 'middle' }}
-                />
-              )}
-            </p>
-          </div>
+          <p style={{ color: 'var(--text-muted)', fontStyle: 'italic', margin: 0 }}>
+            {model === 'loading...' ? 'Fetching analysis...' : 'No analysis available'}
+          </p>
         )}
       </div>
-
-      {/* Insight cards */}
-      {!isLoading && (
-        <div className="space-y-3">
-          {insights.map((insight, i) => (
-            <div
-              key={i}
-              className="flex gap-3 p-3 rounded-xl transition-all duration-300 animate-slide-up"
-              style={{
-                background: 'rgba(255,255,255,0.02)',
-                border: '1px solid var(--border)',
-                animationDelay: `${i * 150}ms`,
-              }}
-            >
-              <span className="text-xs font-semibold flex-shrink-0 mt-0.5 px-2 py-0.5 rounded-full" style={{ color: 'var(--accent-light)', background: 'rgba(59,130,246,0.14)' }}>
-                {insight.icon}
-              </span>
-              <div>
-                <p className="text-xs font-semibold mb-1" style={{ color: 'var(--accent-light)' }}>{insight.label}</p>
-                <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{insight.text}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Confidence score */}
-      {!isLoading && (
-        <div className="flex items-center justify-between mt-4 pt-4" style={{ borderTop: '1px solid var(--border)' }}>
-          <span className="text-xs" style={{ color: 'var(--text-muted)' }}>Analysis Confidence</span>
-          <div className="flex items-center gap-2">
-            <div className="flex gap-0.5">
-              {[...Array(5)].map((_, i) => (
-                <div
-                  key={i}
-                  className="w-5 h-1.5 rounded-full"
-                  style={{ background: i < 4 ? '#6366f1' : 'rgba(255,255,255,0.1)' }}
-                />
-              ))}
-            </div>
-            <span className="text-xs font-semibold" style={{ color: '#818cf8' }}>High (92%)</span>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

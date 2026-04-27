@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # FastAPI Backend
+  bias-detection-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: biasguard-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=True
+      - APP_NAME=BiasGuard Bias Detection API
+    volumes:
+      - ./uploads:/app/uploads
+      - ./app:/app/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - biasguard-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Next.js Frontend
+  biasguard-frontend:
+    build:
+      context: ..
+      dockerfile: Dockerfile.frontend
+    container_name: biasguard-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api
+      - NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
+      - BACKEND_URL=http://bias-detection-api:8000
+    depends_on:
+      bias-detection-api:
+        condition: service_healthy
+    volumes:
+      - ../app:/app/app
+      - ../components:/app/components
+    command: npm run dev
+    networks:
+      - biasguard-network
+
+networks:
+  biasguard-network:
+    driver: bridge
+
